@@ -33,8 +33,10 @@ const toObjects = rows => {
 const truthy = v => ['si','sí','true','1','x','activo','yes'].includes(String(v||'').trim().toLowerCase());
 const hoyVE = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Caracas' });
 
+const bumpUrl = u => /googleusercontent\.com/.test(u) ? u.replace(/=[^\/]*$/, '') + '=s0' : u;
+
 async function frameBuffer(url, W, H) {
-  const buf = Buffer.from(await (await fetch(url)).arrayBuffer());
+  const buf = Buffer.from(await (await fetch(bumpUrl(url))).arrayBuffer());
   return await sharp(buf)
     .resize(W, H, { fit: 'contain', background: { r: 0, g: 0, b: 0 } })
     .png().toBuffer();

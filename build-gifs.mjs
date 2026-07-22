@@ -3,7 +3,12 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 const SHEET_CSV_URL = process.env.SHEET_CSV_URL;
 const DURATION_SEC = parseFloat(process.env.DURATION_SEC || '6');
-const OUT = 'dist';
+
+// modo prueba: si se pasa FECHA_SIM (AAAA-MM-DD), simula ese día y publica en /pruebas
+const FECHA_SIM = (process.env.FECHA_SIM || '').trim();
+const esPrueba = /^\d{4}-\d{2}-\d{2}$/.test(FECHA_SIM);
+const OUT = esPrueba ? 'dist/pruebas' : 'dist';
+
 if (!SHEET_CSV_URL) { console.error('Falta SHEET_CSV_URL'); process.exit(1); }
 
 const MEDIDAS = {
@@ -32,7 +37,6 @@ const toObjects = rows => {
 };
 const truthy = v => ['si','sí','true','1','x','activo','yes'].includes(String(v||'').trim().toLowerCase());
 const hoyVE = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Caracas' });
-
 const bumpUrl = u => /googleusercontent\.com/.test(u) ? u.replace(/=[^\/]*$/, '') + '=s0' : u;
 
 async function frameBuffer(url, W, H) {
@@ -53,7 +57,6 @@ async function build(tag, W, H, urls) {
   }
   const delay = frames.map(() => Math.max(1, DURATION_SEC) * 1000);
   const mk = () => frames.length === 1 ? sharp(frames[0]) : sharp(frames, { join: { animated: true } });
-
   const gif = await mk().gif({ delay, loop: 0, dither: 1.0 }).toBuffer();
   await writeFile(`${OUT}/${tag}.gif`, gif);
   const webp = await mk().webp({ delay, loop: 0, quality: 82 }).toBuffer();
@@ -62,11 +65,13 @@ async function build(tag, W, H, urls) {
 }
 
 const csv = await (await fetch(SHEET_CSV_URL, { headers: { 'cache-control': 'no-cache' } })).text();
-const hoy = hoyVE();
+const hoy = esPrueba ? FECHA_SIM : hoyVE();
+console.log(esPrueba ? `*** MODO PRUEBA — simulando el día ${hoy} (publica en /pruebas) ***` : `Fecha real (VE): ${hoy}`);
+
 const activos = toObjects(parseCSV(csv)).filter(r =>
   truthy(r.activo) && (!r.inicio || hoy >= r.inicio) && (!r.fin || hoy <= r.fin)
 ).sort((a, b) => (parseFloat(a.orden)||9999) - (parseFloat(b.orden)||9999));
-console.log(`Hoy (VE): ${hoy} — ${activos.length} arte(s) activo(s)`);
+console.log(`${activos.length} arte(s) activo(s): ${activos.map(a=>a.nombre).join(', ') || '(ninguno)'}`);
 
 const grupos = {};
 for (const r of activos) {

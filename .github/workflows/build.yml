@@ -3,7 +3,12 @@ name: Pantallas Dormidas
 on:
   schedule:
     - cron: '0 12 * * *'   # 08:00 en Venezuela (UTC-4)
-  workflow_dispatch:        # botón "Run workflow" para correr a mano
+  workflow_dispatch:
+    inputs:
+      fecha:
+        description: 'Fecha simulada para PRUEBA (AAAA-MM-DD). Déjalo vacío para publicar los GIF reales.'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -22,8 +27,10 @@ jobs:
         env:
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
           DURATION_SEC: '6'
+          FECHA_SIM: ${{ inputs.fecha }}
       - name: Publicar en GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+          keep_files: true

@@ -1,5 +1,3 @@
-// Genera un GIF (y un WebP animado, mejor calidad) por (pais x medida) desde un Google
-// Sheet publicado como CSV. Filtra por activo + fechas (hoy en horario de Venezuela).
 import sharp from 'sharp';
 import { mkdir, writeFile } from 'node:fs/promises';
 
@@ -82,10 +80,5 @@ await mkdir(OUT, { recursive: true });
 for (const [tag, g] of Object.entries(grupos)) {
   console.log(`${tag} (${g.w}x${g.h}):`);
   await build(tag, g.w, g.h, g.urls);
-}
-console.log('Listo.');
-for (const [tag, g] of Object.entries(grupos)) {
-  console.log(`GIF ${tag} (${g.w}x${g.h}):`);
-  await buildGif(g.frames, g.w, g.h, `${OUT}/${tag}.gif`);
 }
 console.log('Listo.');

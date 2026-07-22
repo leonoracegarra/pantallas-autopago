@@ -26,7 +26,7 @@ jobs:
         run: node build-gifs.mjs
         env:
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL }}
-          DURATION_SEC: '6'
+          DURATION_SEC: '5'
           FECHA_SIM: ${{ inputs.fecha }}
       - name: Publicar en GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

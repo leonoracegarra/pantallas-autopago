@@ -7,8 +7,8 @@ const OUT = 'dist';
 if (!SHEET_CSV_URL) { console.error('Falta SHEET_CSV_URL'); process.exit(1); }
 
 const MEDIDAS = {
-  h: { col: 'url_horizontal', w: 1920, h: 1080 },
-  v: { col: 'url_vertical',   w: 1080, h: 1920 },
+  h: { col: 'url_horizontal', w: 992,  h: 616 },
+  v: { col: 'url_vertical',   w: 1032, h: 1680 },
 };
 const CODIGO = { venezuela: 've', colombia: 'co' };
 

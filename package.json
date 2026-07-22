@@ -4,8 +4,5 @@
   "private": true,
   "type": "module",
   "scripts": { "build": "node build-gifs.mjs" },
-  "dependencies": {
-    "gifenc": "^1.0.3",
-    "@napi-rs/canvas": "^0.1.65"
-  }
+  "dependencies": { "sharp": "^0.34.0" }
 }
